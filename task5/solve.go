@@ -5,6 +5,7 @@ import(
     "net/http"
     "fmt"
     "sort"
+    "strconv"
 
     "github.com/gorilla/mux"
 )
@@ -13,6 +14,7 @@ type messageHandler struct{
 }
 type myItem struct{
   key string `json:"key"`
+  id int `json:"id"`
 }
 
 var (
@@ -69,7 +71,7 @@ func AddItems(w http.ResponseWriter, r *http.Request){
   if err != nil {
     panic(err)
   }
-    
+
   j, err := json.Marshal(itemToAdd)
   if err != nil {
     panic(err)
@@ -97,4 +99,3 @@ func main(){
     //mux.HandleFunc("/", )
     http.ListenAndServe(":8082", router)
 }
-
