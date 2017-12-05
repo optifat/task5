@@ -5,7 +5,6 @@ import(
     "net/http"
     "fmt"
     "sort"
-    "strconv"
 
     "github.com/gorilla/mux"
 )
@@ -18,7 +17,7 @@ type myItem struct{
 
 var (
   itemsStore  = make(map[int]myItem)
-  key = 0
+  thiskey = 0
 )
 
 func GetItems(w http.ResponseWriter, r *http.Request){
@@ -62,6 +61,26 @@ func UpdateItems(w http.ResponseWriter, r *http.Request){
   w.WriteHeader(http.StatusNoContent)
 }
 
+func AddItems(w http.ResponseWriter, r *http.Request){
+  w.Header().Set("Content-Type", "application/json")
+
+  var itemToAdd myItem
+  err := json.NewDecoder(r.Body).Decode(&itemToAdd)
+  if err != nil {
+    panic(err)
+  }
+  itemToAdd.key = thiskey
+  itemsStore[thiskey] = itemToAdd
+  thiskey += 1
+
+  j, err := json.Marshal(itemToAdd)
+  if err != nil {
+    panic(err)
+  }
+  w.WriteHeader(http.StatusOK)
+  w.Write(j)
+}
+
 func (m *messageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request){
     fmt.Fprintf(w, m.message)
 }
@@ -71,7 +90,8 @@ func main(){
     router := mux.NewRouter()
     apiRouter := router.PathPrefix("solve").Subrouter()
     apiRouter.HandleFunc("/",GetItems).Methods("GET")
-    apiRouter.HandleFunc("/{key}", UpdateItems).Methods("UPDATE")
+    apiRouter.HandleFunc("/",AddItems).Methods("POST")
+    apiRouter.HandleFunc("/{key}", UpdateItems).Methods("PUT")
     //apiRouter.HandleFunc("/",AddTodoItems).Methods("POST")
     //fs := http.FileServer(http.Dir("solve"))
     //mux.Handle("/", fs)
@@ -80,3 +100,4 @@ func main(){
     //mux.HandleFunc("/", )
     http.ListenAndServe(":8082", router)
 }
+
