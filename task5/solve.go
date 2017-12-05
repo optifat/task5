@@ -77,7 +77,7 @@ func AddItems(w http.ResponseWriter, r *http.Request){
     panic(err)
   }
   w.WriteHeader(http.StatusOK)
-  w.Write(itemToAdd.key)
+  w.Write(j)
 }
 
 func (m *messageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request){
