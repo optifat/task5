@@ -69,10 +69,7 @@ func AddItems(w http.ResponseWriter, r *http.Request){
   if err != nil {
     panic(err)
   }
-  itemToAdd.key = thiskey
-  itemsStore[thiskey] = itemToAdd
-  thiskey += 1
-
+    
   j, err := json.Marshal(itemToAdd)
   if err != nil {
     panic(err)
